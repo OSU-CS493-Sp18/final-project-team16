@@ -1,0 +1,24 @@
+{
+  "name": "recipe_api",
+  "version": "1.0.0",
+  "description": "A simple recipe sharing API",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+	"start": "node server.js"
+	"dev": "NODE_ENV=development nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OSU-CS493-Sp18/final-project-team16.git"
+  },
+  "author": "Andrew Soltesz",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/OSU-CS493-Sp18/final-project-team16/issues"
+  },
+  "homepage": "https://github.com/OSU-CS493-Sp18/final-project-team16#readme"
+}
