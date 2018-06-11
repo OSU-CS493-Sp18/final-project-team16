@@ -51,4 +51,7 @@ MongoClient.connect(mongoURL, function (err, client) {
       console.log("== Server is running on port", port);
     });
   }
+  else {
+    console.log(err);
+  }
 });

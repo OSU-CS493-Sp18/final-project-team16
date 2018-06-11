@@ -8,6 +8,6 @@ db.users.insertOne({
   userID: "luke",
   password: "pass123",
   bio: "",
-  recipes [],
-  reviews []
+  recipes: [],
+  reviews: []
 })
