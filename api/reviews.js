@@ -131,9 +131,9 @@ router.post('/', function (req, res, next) {
 
 });
 
-function getReviewByID(reviewID, mysqlPool) {
+function getReviewByRecipeID(recipeID, mysqlPool) {
   return new Promise((resolve, reject) => {
-    mysqlPool.query('SELECT * FROM reviews WHERE id = ?', [ reviewID ], function (err, results) {
+    mysqlPool.query('SELECT * FROM reviews WHERE recipeID = ?', [ recipeID ], function (err, results) {
       if (err) {
         reject(err);
       } else {
@@ -143,10 +143,10 @@ function getReviewByID(reviewID, mysqlPool) {
   });
 }
 
-router.get('/:reviewID', function (req, res, next) {
+router.get('/:recipeID', function (req, res, next) {
   const mysqlPool = req.app.locals.mysqlPool;
-  const reviewID = parseInt(req.params.reviewID);
-  getReviewByID(reviewID, mysqlPool)
+  const recipeID = parseInt(req.params.recipeID);
+  getReviewByRecipeID(recipeID, mysqlPool)
     .then((review) => {
       if (review) {
         res.status(200).json(review);

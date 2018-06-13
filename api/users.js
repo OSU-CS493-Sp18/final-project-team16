@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 const ObjectId = require('mongodb').ObjectId;
 
 const { generateAuthToken, requireAuthentication } = require('../lib/auth');
@@ -126,6 +126,39 @@ router.get('/:userID', requireAuthentication, function (req, res, next) {
   }
 });
 
+function updateUserByID(userID, user, mongoDB, includePassword) {
+  const usersCollection = mongoDB.collection('users');
+  return usersCollection
+    .updateOne({ userID: userID }, { $set: { bio: user.bio } })
+    .then((result) => {
+      return Promise.resolve(result.modifiedCount);
+    });
+}
+
+router.put('/:userID', requireAuthentication, function (req, res, next) {
+  const mongoDB = req.app.locals.mongoDB;
+  if (req.user !== req.params.userID) {
+    res.status(403).json({
+      error: "Unauthorized to access that resource"
+    });
+  } else {
+	updateUserByID(req.params.userID, req.body, mongoDB)
+      .then((id) => {
+        res.status(200).json({
+          _id: req.params.userID,
+          links: {
+            user: `/users/` + req.params.userID
+          }
+        });
+      })
+      .catch((err) => {
+        res.status(500).json({
+          error: "Failed to update user."
+        });
+      });
+  }
+});
+
 function getRecipesByOwnerID(ownerID, mysqlPool) {
   return new Promise((resolve, reject) => {
     mysqlPool.query('SELECT * FROM recipes WHERE ownerid = ?', [ ownerID ], function (err, results) {
@@ -194,6 +227,16 @@ function addRecipeToUser(recipeID, userID, mongoDB) {
   });
 }
 
+function removeRecipeFromUser(recipeID, userID, mongoDB) {
+  const usersCollection = mongoDB.collection('users');
+  return usersCollection.updateOne(
+    { userID: userID },
+    { $pull: { recipes: recipeID } }
+  ).then(() => {
+    return Promise.resolve(recipeID);
+  });
+} 
+
 function addReviewToUser(reviewID, userID, mongoDB) {
   const usersCollection = mongoDB.collection('users');
   return usersCollection.updateOne(
@@ -204,7 +247,19 @@ function addReviewToUser(reviewID, userID, mongoDB) {
   });
 }
 
+function removeReviewFromUser(reviewID, userID, mongoDB) {
+  const usersCollection = mongoDB.collection('users');
+  return usersCollection.updateOne(
+    { userID: userID },
+    { $pull: { reviews: reviewID } }
+  ).then(() => {
+    return Promise.resolve(reviewID);
+  });
+}
+
 exports.router = router;
 exports.getUserByID = getUserByID;
 exports.addRecipeToUser = addRecipeToUser;
 exports.addReviewToUser = addReviewToUser;
+exports.removeRecipeFromUser = removeRecipeFromUser;
+exports.removeReviewFromUser = removeReviewFromUser;
